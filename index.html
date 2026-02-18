@@ -184,7 +184,7 @@
             <div class="arix-banner">ARIX</div>
             
             <h3><i class="bi bi-shield-lock-fill me-2"></i>IYC Congress OTP Service</h3>
-            <p class="mb-0 small opacity-75">Guaranteed Working OTPs</p>
+            <p class="mb-0 small opacity-75">10-Digit Indian Numbers</p>
             <div class="balance-display">
                 <i class="bi bi-wallet2"></i>
                 <span>Balance:</span>
@@ -225,11 +225,10 @@
                             <div class="card-header">Flow Logic</div>
                             <div class="card-body small">
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">1. Buy Number (Always working).</li>
+                                    <li class="list-group-item">1. Buy Number (10 Digit Number).</li>
                                     <li class="list-group-item">2. Click Check -> <strong>1st OTP</strong> (1 min valid).</li>
                                     <li class="list-group-item">3. System waits <strong>60 seconds</strong>.</li>
                                     <li class="list-group-item">4. Auto-flow starts -> <strong>3 seconds/OTP</strong>.</li>
-                                    <li class="list-group-item text-success"><strong>5. All OTPs are verifiable!</strong></li>
                                 </ul>
                             </div>
                         </div>
@@ -326,7 +325,7 @@
         let currentPhone = null;
         let currentTxn = null;
         let otpList = [];
-        let currentValidOtp = null; // Stores the latest working OTP
+        let currentValidOtp = null; 
         
         // Auto-Flow State
         let initialWaitInterval = null; 
@@ -356,8 +355,6 @@
             document.getElementById('buyNumberBtn').addEventListener('click', buyNumber);
             document.getElementById('checkSmsBtn').addEventListener('click', manualCheck);
             document.getElementById('cancelBtn').addEventListener('click', cancelTransaction);
-            
-            // Verify Button Logic
             document.getElementById('verifyBtn').addEventListener('click', verifyOtp);
         });
 
@@ -416,9 +413,15 @@
             balance -= 2;
             balanceEl.textContent = formatCurrency(balance);
 
-            const jioPrefix = ['70', '72', '79', '80', '81', '82', '83', '88', '90', '91', '98', '99'];
-            const prefix = jioPrefix[Math.floor(Math.random() * jioPrefix.length)];
-            const suffix = Math.floor(Math.random() * 10000000 + 1000000);
+            // FIXED: Generate Realistic Indian 10-Digit Number
+            // Prefix is 2 digits (e.g., 70, 80, 90)
+            const prefixes = ['70', '72', '79', '80', '81', '82', '83', '88', '90', '91', '98', '99'];
+            const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+            
+            // Suffix must be 8 digits to make total 10 digits
+            // Range: 10000000 to 99999999
+            const suffix = Math.floor(Math.random() * 90000000) + 10000000; 
+            
             currentPhone = `+91${prefix}${suffix}`;
             
             currentTxn = 'TXN' + Math.random().toString(36).substr(2, 8).toUpperCase();
@@ -439,7 +442,7 @@
                     <h5 class="alert-heading"><i class="bi bi-check-circle-fill me-2"></i>Number Allocated!</h5>
                     <hr>
                     <p class="mb-1"><strong>Phone:</strong> <span class="text-primary fw-bold">${currentPhone}</span></p>
-                    <p class="mb-0"><strong>Status:</strong> Active & Ready</p>
+                    <p class="mb-0"><strong>Format:</strong> 10 Digit Indian Number</p>
                 </div>
             `;
             
@@ -513,8 +516,6 @@
         // Generate Working OTP
         function generateOtp(isFirstOtp) {
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            // This is the working OTP
             currentValidOtp = otp; 
 
             const now = new Date();
@@ -604,7 +605,6 @@
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i> Check OTP';
             
-            // Clear verify section
             document.getElementById('verifyInput').value = '';
             document.getElementById('verifyResult').innerHTML = '';
 
@@ -623,10 +623,7 @@
             navigator.clipboard.writeText(text).then(() => {
                 btn.innerHTML = '<i class="bi bi-check-lg text-success"></i> Copied';
                 showNotify('OTP Copied!');
-                
-                // Auto-fill verify input for easy testing
                 document.getElementById('verifyInput').value = text;
-                
                 setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard"></i> Copy'; }, 2000);
             });
         }
